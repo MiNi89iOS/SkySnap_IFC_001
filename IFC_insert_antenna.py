@@ -15,16 +15,19 @@ import numpy as np
 
 
 EPS = 1e-9
+ANTENNA_MODEL_AZIMUTH_OFFSET_DEG = 90.0
 
 
 @dataclass
 class LegPlacement:
-    leg: ifcopenshell.entity_instance
+    leg_id: int
+    leg_name: str
     axis_start: np.ndarray
     axis_end: np.ndarray
     center_at_height: np.ndarray
     insertion_point: np.ndarray
     direction: np.ndarray
+    radial_direction: np.ndarray
     radial_offset: float
 
 
@@ -142,9 +145,19 @@ def get_column_profile_info(column: ifcopenshell.entity_instance) -> tuple[float
     return outer_radius, inner_radius
 
 
-def compute_leg_placement(
-    segment_model: ifcopenshell.file, target_height_model_units: float, leg_index: int
-) -> LegPlacement:
+def azimuth_to_world_x(azimuth_deg: float) -> np.ndarray:
+    # 0 deg = +Y (north), positive clockwise. Model axes: +X east, +Y north.
+    # Antenna geometry has an internal +90 deg orientation offset.
+    effective_azimuth_deg = (azimuth_deg + ANTENNA_MODEL_AZIMUTH_OFFSET_DEG) % 360.0
+    azimuth_rad = math.radians(effective_azimuth_deg)
+    return np.array([math.sin(azimuth_rad), math.cos(azimuth_rad), 0.0], dtype=float)
+
+
+def compute_leg_candidates(
+    segment_model: ifcopenshell.file,
+    target_height_model_units: float,
+    preferred_radial_world: np.ndarray,
+) -> list[LegPlacement]:
     candidates: list[LegPlacement] = []
     global_up = np.array([0.0, 0.0, 1.0], dtype=float)
 
@@ -165,10 +178,14 @@ def compute_leg_placement(
         direction = normalize(delta)
         center = axis_start + t * delta
 
-        radial_dir = np.cross(global_up, direction)
+        # Build a horizontal vector orthogonal to the column axis.
+        # This keeps insertion at exact target Z while still respecting column inclination.
+        radial_dir = np.array([-direction[1], direction[0], 0.0], dtype=float)
         if np.linalg.norm(radial_dir) < EPS:
             radial_dir = np.cross(np.array([1.0, 0.0, 0.0], dtype=float), direction)
         radial_dir = normalize(radial_dir)
+        if np.dot(radial_dir, preferred_radial_world) < 0.0:
+            radial_dir = -radial_dir
 
         outer_radius, inner_radius = get_column_profile_info(column)
         if outer_radius > 0.0 and inner_radius > 0.0 and inner_radius < outer_radius:
@@ -181,22 +198,22 @@ def compute_leg_placement(
         insertion = center + radial_dir * radial_offset
         candidates.append(
             LegPlacement(
-                leg=column,
+                leg_id=column.id(),
+                leg_name=str(column.Name or "<NO_NAME>"),
                 axis_start=axis_start,
                 axis_end=axis_end,
                 center_at_height=center,
                 insertion_point=insertion,
                 direction=direction,
+                radial_direction=radial_dir,
                 radial_offset=radial_offset,
             )
         )
 
     if not candidates:
         raise ValueError("Nie znaleziono nogi segmentu (IfcColumn) przecinajacej zadana wysokosc.")
-    if leg_index < 0 or leg_index >= len(candidates):
-        raise ValueError(f"Niepoprawny --leg-index={leg_index}. Dostepny zakres: 0..{len(candidates)-1}.")
-
-    return candidates[leg_index]
+    candidates.sort(key=lambda item: item.leg_id)
+    return candidates
 
 
 def find_source_antenna(antenna_model: ifcopenshell.file) -> ifcopenshell.entity_instance:
@@ -390,34 +407,19 @@ def harmonize_migrated_owner_history(
         remove_if_orphan(target_model, organization)
 
 
-def main() -> int:
-    args = parse_args()
+def place_antenna_on_leg(
+    segment_model: ifcopenshell.file,
+    antenna_model: ifcopenshell.file,
+    leg_placement: LegPlacement,
+    azimuth_x_world: np.ndarray,
+) -> tuple[ifcopenshell.entity_instance, ifcopenshell.entity_instance]:
+    leg = segment_model.by_id(leg_placement.leg_id)
+    if not leg or not leg.is_a("IfcColumn"):
+        raise ValueError(f"Nie znaleziono kolumny o id={leg_placement.leg_id} w modelu.")
+    if not leg.ContainedInStructure:
+        raise ValueError(f"Noga #{leg.id()} nie jest przypisana do struktury przestrzennej.")
 
-    segment_path = Path(args.segment_ifc)
-    antenna_path = Path(args.antenna_ifc)
-    output_path = Path(args.output_ifc)
-
-    if not segment_path.exists():
-        print(f"Blad: nie znaleziono pliku segmentu: {segment_path}")
-        return 2
-    if not antenna_path.exists():
-        print(f"Blad: nie znaleziono pliku anteny: {antenna_path}")
-        return 2
-    if args.height_m <= 0:
-        print("Blad: --height-m musi byc > 0.")
-        return 2
-
-    segment_model = ifcopenshell.open(str(segment_path))
-    antenna_model = ifcopenshell.open(str(antenna_path))
-
-    unit_scale_to_si = ifcopenshell.util.unit.calculate_unit_scale(segment_model)
-    target_height_units = args.height_m / unit_scale_to_si
-
-    leg_placement = compute_leg_placement(segment_model, target_height_units, args.leg_index)
-    if not leg_placement.leg.ContainedInStructure:
-        print(f"Blad: noga #{leg_placement.leg.id()} nie jest przypisana do struktury przestrzennej.")
-        return 2
-    target_container = leg_placement.leg.ContainedInStructure[0].RelatingStructure
+    target_container = leg.ContainedInStructure[0].RelatingStructure
 
     source_antenna = find_source_antenna(antenna_model)
     migrator = ifcopenshell.util.schema.Migrator()
@@ -427,13 +429,7 @@ def main() -> int:
     if target_owner_history:
         target_antenna.OwnerHistory = target_owner_history
 
-    # Azimuth convention:
-    # 0 deg = +Y (north), positive clockwise.
-    # Convert to XY vector in model coordinates (+X east, +Y north).
-    azimuth_rad = math.radians(args.azimuth_deg)
-    azimuth_x_world = np.array([math.sin(azimuth_rad), math.cos(azimuth_rad), 0.0], dtype=float)
     azimuth_z_world = np.array([0.0, 0.0, 1.0], dtype=float)
-
     axis_placement = create_axis_placement(
         model=segment_model,
         reference_placement=target_container.ObjectPlacement,
@@ -454,19 +450,84 @@ def main() -> int:
     refresh_migrated_root_guids(segment_model, migrator)
     harmonize_migrated_owner_history(segment_model, migrator, target_owner_history)
     target_antenna.GlobalId = ifcopenshell.guid.new()
+    return target_antenna, target_container
+
+
+def main() -> int:
+    args = parse_args()
+
+    segment_path = Path(args.segment_ifc)
+    antenna_path = Path(args.antenna_ifc)
+    output_path = Path(args.output_ifc)
+
+    if not segment_path.exists():
+        print(f"Blad: nie znaleziono pliku segmentu: {segment_path}")
+        return 2
+    if not antenna_path.exists():
+        print(f"Blad: nie znaleziono pliku anteny: {antenna_path}")
+        return 2
+    if args.height_m <= 0:
+        print("Blad: --height-m musi byc > 0.")
+        return 2
+
+    segment_probe = ifcopenshell.open(str(segment_path))
+    unit_scale_to_si = ifcopenshell.util.unit.calculate_unit_scale(segment_probe)
+    target_height_units = args.height_m / unit_scale_to_si
+
+    azimuth_x_world = azimuth_to_world_x(args.azimuth_deg)
+    try:
+        leg_candidates = compute_leg_candidates(
+            segment_probe,
+            target_height_model_units=target_height_units,
+            preferred_radial_world=azimuth_x_world,
+        )
+    except ValueError as exc:
+        print(f"Blad: {exc}")
+        return 2
+
+    if args.leg_index < 0 or args.leg_index >= len(leg_candidates):
+        print(f"Blad: niepoprawny --leg-index={args.leg_index}. Dostepny zakres: 0..{len(leg_candidates)-1}.")
+        return 2
+
+    next_index = args.leg_index + 1
+    if next_index >= len(leg_candidates):
+        print(
+            f"Blad: brak kolejnej kolumny po indexie {args.leg_index}. "
+            f"Dostepny maksymalny index: {len(leg_candidates)-1}."
+        )
+        return 2
+
+    leg_placement = leg_candidates[next_index]
+    segment_model = ifcopenshell.open(str(segment_path))
+    antenna_model = ifcopenshell.open(str(antenna_path))
+
+    try:
+        place_antenna_on_leg(
+            segment_model=segment_model,
+            antenna_model=antenna_model,
+            leg_placement=leg_placement,
+            azimuth_x_world=azimuth_x_world,
+        )
+    except ValueError as exc:
+        print(f"Blad podczas wstawiania na kolumnie #{leg_placement.leg_id}: {exc}")
+        return 1
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     segment_model.write(str(output_path))
-
     print("Wstawienie zakonczone.")
     print(f"Plik wyjsciowy: {output_path}")
-    print(f"Noga (IfcColumn): #{leg_placement.leg.id()} | {leg_placement.leg.Name}")
+    print(f"Noga (IfcColumn): #{leg_placement.leg_id} | {leg_placement.leg_name}")
     print(
         "Punkt wstawienia [jednostki modelu]: "
         f"({leg_placement.insertion_point[0]:.3f}, {leg_placement.insertion_point[1]:.3f}, {leg_placement.insertion_point[2]:.3f})"
     )
     print(f"Wysokosc docelowa: {args.height_m:.3f} m")
-    print(f"Azymut: {args.azimuth_deg:.3f} deg (od polnocy, zgodnie z ruchem wskazowek zegara)")
+    print(
+        f"Azymut zadany: {args.azimuth_deg:.3f} deg | "
+        f"uzyty do orientacji: {(args.azimuth_deg + ANTENNA_MODEL_AZIMUTH_OFFSET_DEG) % 360.0:.3f} deg "
+        "(od polnocy, zgodnie z ruchem wskazowek zegara)"
+    )
+    print(f"Uzyty kandydat kolumny: index={next_index} z {len(leg_candidates)-1}")
     return 0
 
 
