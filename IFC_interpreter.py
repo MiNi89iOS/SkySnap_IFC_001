@@ -38,41 +38,60 @@ def format_issue(issue: dict) -> str:
     return f"{prefix} {message}"
 
 
-def validate_ifc_file(path: Path, express_rules: bool, max_issues: int) -> int:
+def write_report(path: Path, lines: list[str]) -> Path:
+    report_path = path.with_name(f"{path.stem}_VERIFICATION.txt")
+    report_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return report_path
+
+
+def validate_ifc_file(path: Path, express_rules: bool, max_issues: int) -> tuple[int, Path]:
+    report_lines: list[str] = [f"=== {path.name} ==="]
     print(f"\n=== {path.name} ===")
 
     try:
         model = ifcopenshell.open(str(path))
         schema = getattr(model, "schema", "unknown")
-        print(f"open: OK (schema={schema})")
+        open_line = f"open: OK (schema={schema})"
+        print(open_line)
+        report_lines.append(open_line)
     except Exception as exc:
-        print(f"open: FAIL ({type(exc).__name__}: {exc})")
-        return 1
+        fail_line = f"open: FAIL ({type(exc).__name__}: {exc})"
+        print(fail_line)
+        report_lines.append(fail_line)
+        return 1, write_report(path, report_lines)
 
     logger = ifc_validate.json_logger()
     try:
         ifc_validate.validate(str(path), logger, express_rules=express_rules)
     except Exception as exc:
-        print(f"validate: FAIL ({type(exc).__name__}: {exc})")
-        return 1
+        fail_line = f"validate: FAIL ({type(exc).__name__}: {exc})"
+        print(fail_line)
+        report_lines.append(fail_line)
+        return 1, write_report(path, report_lines)
 
     levels = Counter(str(item.get("level", "unknown")).lower() for item in logger.statements)
     total_findings = sum(levels.values())
     error_count = levels.get("error", 0)
     warning_count = levels.get("warning", 0)
 
-    print(
+    validate_line = (
         "validate: OK "
         f"(findings={total_findings}, errors={error_count}, warnings={warning_count}, by_level={dict(levels)})"
     )
+    print(validate_line)
+    report_lines.append(validate_line)
 
     for issue in logger.statements[:max_issues]:
-        print(f"- {format_issue(issue)}")
+        issue_line = f"- {format_issue(issue)}"
+        print(issue_line)
+        report_lines.append(issue_line)
 
     if total_findings > max_issues:
-        print(f"- ... and {total_findings - max_issues} more findings")
+        more_line = f"- ... and {total_findings - max_issues} more findings"
+        print(more_line)
+        report_lines.append(more_line)
 
-    return 1 if error_count > 0 else 0
+    return (1 if error_count > 0 else 0), write_report(path, report_lines)
 
 
 def parse_args() -> argparse.Namespace:
@@ -124,13 +143,19 @@ def main() -> int:
     print(f"Tryb EXPRESS rules: {'ON' if args.express_rules else 'OFF'}")
 
     invalid_files = 0
+    report_files: list[Path] = []
     for ifc_file in ifc_files:
-        invalid_files += validate_ifc_file(ifc_file, args.express_rules, args.max_issues)
+        invalid, report_path = validate_ifc_file(ifc_file, args.express_rules, args.max_issues)
+        invalid_files += invalid
+        report_files.append(report_path)
 
     print("\n=== PODSUMOWANIE ===")
     print(f"Sprawdzone pliki: {len(ifc_files)}")
     print(f"Pliki niepoprawne: {invalid_files}")
     print(f"Pliki poprawne: {len(ifc_files) - invalid_files}")
+    print("Raporty:")
+    for report in report_files:
+        print(f"- {report}")
 
     return 1 if invalid_files > 0 else 0
 

@@ -1,0 +1,4 @@
+=== SEGMENT.ifc ===
+open: OK (schema=IFC4)
+validate: OK (findings=1, errors=1, warnings=0, by_level={'error': 1})
+- [ERROR] (type=schema, attribute=IfcRelAssociatesMaterial.RelatedObjects, instance=#22526=IfcRelAssociatesMaterial('1foO0sSA5Eruqzg6wQrcPu',#18,$,$,$,#22527)) Attribute not optional

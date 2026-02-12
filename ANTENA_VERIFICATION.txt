@@ -1,0 +1,3 @@
+=== ANTENA.ifc ===
+open: OK (schema=IFC4)
+validate: OK (findings=0, errors=0, warnings=0, by_level={})
