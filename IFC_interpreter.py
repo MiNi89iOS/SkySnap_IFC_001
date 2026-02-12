@@ -1,0 +1,2 @@
+import ifcopenshell
+print("działa")
