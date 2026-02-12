@@ -1,0 +1,47 @@
+FILE: ANTENA.ifc
+SCHEMA: IFC4
+IFCPROPERTYSET_INSTANCES: 10
+UNIQUE_PROPERTYSET_NAMES: 8
+UNASSIGNED_IFCPROPERTYSET_INSTANCES: 0
+
+PROPERTY_SETS:
+1. Pset_BuildingCommon
+   definitions: 1
+   assigned_items: 1
+   entity_types: IfcBuilding:1
+   properties(3): IsLandmarked, NumberOfStoreys, Reference
+2. Pset_BuildingElementProxyCommon
+   definitions: 1
+   assigned_items: 1
+   entity_types: IfcBuildingElementProxy:1
+   properties(2): IsExternal, Reference
+3. Pset_BuildingStoreyCommon
+   definitions: 2
+   assigned_items: 2
+   entity_types: IfcBuildingStorey:2
+   properties(2): AboveGround, Reference
+4. Pset_CommunicationsApplianceTypeCommon
+   definitions: 1
+   assigned_items: 1
+   entity_types: IfcCommunicationsAppliance:1
+   properties(1): Reference
+5. Pset_EnvironmentalImpactIndicators
+   definitions: 2
+   assigned_items: 2
+   entity_types: IfcBuildingElementProxy:1, IfcCommunicationsAppliance:1
+   properties(1): Reference
+6. Pset_ManufacturerTypeInformation
+   definitions: 1
+   assigned_items: 1
+   entity_types: IfcCommunicationsApplianceType:1
+   properties(1): Manufacturer
+7. Pset_SiteCommon
+   definitions: 1
+   assigned_items: 1
+   entity_types: IfcSite:1
+   properties(1): Reference
+8. Pset_SkySnap
+   definitions: 1
+   assigned_items: 1
+   entity_types: IfcCommunicationsAppliance:1
+   properties(33): AntennaENG, AntennaPL, AntennaType, AssetIdentifier, DatabaseLink, Direction, FiberCableLength, Gross Weight, InstalationDate, InstalationStatus, JumperLength, Manufacturer, ModelNumber, NameENG, NamePL, NominalAzimuth, NominalDepthAntenna, NominalHeightAntenna, NominalInstalationHeight, NominalTiltAntenna, NominalWidthAntenna, Operator, PolarizationMode, RealAzimuth, RealDepthAntenna, RealHeightAntenna, RealInstalationHeight, RealWidthAntenna, Sector, SignalPath ... (+3 more)

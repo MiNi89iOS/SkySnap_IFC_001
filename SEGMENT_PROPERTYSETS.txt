@@ -1,0 +1,142 @@
+FILE: SEGMENT.ifc
+SCHEMA: IFC4
+IFCPROPERTYSET_INSTANCES: 969
+UNIQUE_PROPERTYSET_NAMES: 27
+UNASSIGNED_IFCPROPERTYSET_INSTANCES: 0
+
+PROPERTY_SETS:
+1. Constraints
+   definitions: 28
+   assigned_items: 29
+   entity_types: IfcMember:12, IfcPlate:6, IfcColumn:3, IfcBuildingElementProxy:2, IfcBuildingElementProxyType:2, IfcBuildingStorey:2, IfcPlateType:2
+   properties(19): Base Level, Base Offset, Column Style, Cross-Section Rotation, Default Elevation, Elevation, Elevation from Level, End Level Offset, Host, Level, Move Base With Grids, Move Top With Grids, Moves With Nearby Elements, Offset from Host, Reference Level, Reference Level Elevation, Start Level Offset, Top Level, Top Offset
+2. Constraints(Type)
+   definitions: 1
+   assigned_items: 2
+   entity_types: IfcBuildingStorey:2
+   properties(1): Elevation Base
+3. Construction
+   definitions: 3
+   assigned_items: 3
+   entity_types: IfcColumn:3
+   properties(4): Base Cut Style, Base Extension, Top Cut Style, Top Extension
+4. Dimensions
+   definitions: 28
+   assigned_items: 41
+   entity_types: IfcMember:12, IfcMemberType:12, IfcPlate:6, IfcColumn:3, IfcColumnType:3, IfcBuildingElementProxy:2, IfcBuildingStorey:2, IfcBuildingElementProxyType:1
+   properties(14): a, Angle, Area, b, c, Computation Height, Cut Length, Diameter, Ladder Width, Radius, System Length, Volume, Wall Design Thickness, Width
+5. Geometric Position
+   definitions: 12
+   assigned_items: 12
+   entity_types: IfcMember:12
+   properties(6): Join Status, y Justification, y Offset Value, yz Justification, z Justification, z Offset Value
+6. Graphics(Type)
+   definitions: 1
+   assigned_items: 2
+   entity_types: IfcBuildingStorey:2
+   properties(6): Color, Line Pattern, Line Weight, Symbol, Symbol at End 1 Default, Symbol at End 2 Default
+7. Identity Data
+   definitions: 22
+   assigned_items: 36
+   entity_types: IfcMember:12, IfcMemberType:12, IfcColumn:3, IfcColumnType:3, IfcBuildingElementProxyType:2, IfcBuildingStorey:2, IfcPlateType:2
+   properties(7): Building Story, Code Name, Has Association, Name, Section Name Key, Structural, Type Name
+8. Identity Data(Type)
+   definitions: 1
+   assigned_items: 2
+   entity_types: IfcBuildingStorey:2
+   properties(1): Type Name
+9. Materials and Finishes
+   definitions: 78
+   assigned_items: 78
+   entity_types: IfcPlate:63, IfcMember:12, IfcColumn:3
+   properties(1): Structural Material
+10. Other
+   definitions: 181
+   assigned_items: 196
+   entity_types: IfcPlate:69, IfcFastener:63, IfcMechanicalFastener:24, IfcMember:12, IfcMemberType:12, IfcColumn:3, IfcColumnType:3, IfcBuildingElementProxy:2, IfcBuildingElementProxyType:2, IfcBuildingStorey:2, IfcPlateType:2, IfcBuilding:1, IfcSite:1
+   properties(12): Category, Client Name, Family, Family and Type, Family Name, Project Address, Project Issue Date, Project Name, Project Number, Project Status, Type, Type Id
+11. Other(Type)
+   definitions: 1
+   assigned_items: 2
+   entity_types: IfcBuildingStorey:2
+   properties(2): Category, Family Name
+12. Phasing
+   definitions: 110
+   assigned_items: 110
+   entity_types: IfcPlate:69, IfcMechanicalFastener:24, IfcMember:12, IfcColumn:3, IfcBuildingElementProxy:2
+   properties(1): Phase Created
+13. ProfileProperties
+   definitions: 12
+   assigned_items: 12
+   entity_types: IfcMember:12
+   properties(2): Section, SectionFamily
+14. Pset_BuildingCommon
+   definitions: 1
+   assigned_items: 1
+   entity_types: IfcBuilding:1
+   properties(3): IsLandmarked, NumberOfStoreys, Reference
+15. Pset_BuildingElementProxyCommon
+   definitions: 2
+   assigned_items: 2
+   entity_types: IfcBuildingElementProxy:2
+   properties(2): IsExternal, Reference
+16. Pset_BuildingStoreyCommon
+   definitions: 2
+   assigned_items: 2
+   entity_types: IfcBuildingStorey:2
+   properties(2): AboveGround, Reference
+17. Pset_ColumnCommon
+   definitions: 6
+   assigned_items: 6
+   entity_types: IfcColumn:3, IfcColumnType:3
+   properties(5): IsExternal, LoadBearing, Reference, Roll, Slope
+18. Pset_EnvironmentalImpactIndicators
+   definitions: 23
+   assigned_items: 23
+   entity_types: IfcMember:12, IfcPlate:6, IfcColumn:3, IfcBuildingElementProxy:2
+   properties(1): Reference
+19. Pset_MemberCommon
+   definitions: 24
+   assigned_items: 24
+   entity_types: IfcMember:12, IfcMemberType:12
+   properties(6): IsExternal, LoadBearing, Reference, Roll, Slope, Span
+20. Pset_PlateCommon
+   definitions: 75
+   assigned_items: 75
+   entity_types: IfcPlate:75
+   properties(6): AcousticRating, FireRating, IsExternal, LoadBearing, Reference, ThermalTransmittance
+21. Pset_ReinforcementBarPitchOfColumn
+   definitions: 3
+   assigned_items: 3
+   entity_types: IfcColumn:3
+   properties(1): Reference
+22. Pset_SiteCommon
+   definitions: 1
+   assigned_items: 1
+   entity_types: IfcSite:1
+   properties(1): Reference
+23. Pset_SkySnap
+   definitions: 23
+   assigned_items: 23
+   entity_types: IfcMember:12, IfcPlate:6, IfcColumn:3, IfcBuildingElementProxy:2
+   properties(6): ConnectorType, NameENG, NamePL, StatusENG, StatusPL, WallID
+24. Structural
+   definitions: 173
+   assigned_items: 186
+   entity_types: IfcPlate:69, IfcFastener:63, IfcMechanicalFastener:24, IfcMember:12, IfcMemberType:12, IfcColumn:3, IfcColumnType:3
+   properties(53): Area, Assembly, Bolt Length, Coating, Continuous, Diameter, Double Effective Throat, Double Preparation Depth, Double Root Opening, Double Surface Shape, Double Thickness, Double Type, Double Weld preparation, Edge distance on side 1, Edge distance on side 2, End Attachment Type, Exact Weight, Finish Calculation At Gap, Grade, Grip Length, Grip Length Increase, Intermediate distance on side 1, Intermediate distance on side 2, Inverted, Justification, Length, Length on side 1, Length on side 2, Location, Main Effective Throat ... (+23 more)
+25. Structural Analysis
+   definitions: 2
+   assigned_items: 15
+   entity_types: IfcMemberType:12, IfcColumnType:3
+   properties(8): Elastic Modulus strong axis, Moment of Inertia strong axis, Nominal Weight, Perimeter, Plastic Modulus strong axis, Section Area, Torsional Modulus, Torsional Moment of Inertia
+26. Structural Section Geometry
+   definitions: 2
+   assigned_items: 15
+   entity_types: IfcMemberType:12, IfcColumnType:3
+   properties(4): Centroid Horizontal, Centroid Vertical, Diameter, Wall Nominal Thickness
+27. Text
+   definitions: 154
+   assigned_items: 154
+   entity_types: IfcPlate:69, IfcFastener:44, IfcMechanicalFastener:24, IfcMember:12, IfcColumn:3, IfcBuildingElementProxy:2
+   properties(6): ConnectorType, NameENG, NamePL, StatusENG, StatusPL, WallID
