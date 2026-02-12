@@ -1,5 +1,7 @@
 1) Instrukcja konfiguracji srodowiska:
 
+Korzystałem z Visual Studio Code
+
 Wymagania:
 - Python 3.14 (lub zgodny 3.x z obsluga ifcopenshell 0.8.4.post1)
 - system powlokowy (np. zsh/bash)
