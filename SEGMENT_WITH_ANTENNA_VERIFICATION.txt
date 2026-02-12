@@ -1,0 +1,6 @@
+=== SEGMENT_WITH_ANTENNA.ifc ===
+open: OK (schema=IFC4)
+validate: OK (findings=3, errors=3, warnings=0, by_level={'error': 3})
+- [ERROR] (type=schema, instance=#23391=IfcApplication(#23392,'2026','Autodesk Revit 2026 (ENU)','Revit')) On instance:     #23391=IfcApplication(#23392,'2026','Autodesk Revit 2026 (ENU)','Revit')                                  ^^^^^^ ^^^^^^^^^^^^^^^^^^^^^^^^^^^          Rule IfcApplication.UR2:     The combination of attributes ApplicationFullName and Version should be unique Violated by:     #2=IfcApplication(#1,'2026','Autodesk Revit 2026 (ENU)','Revit')                          ^^^^^^ ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+- [ERROR] (type=schema, instance=#23391=IfcApplication(#23392,'2026','Autodesk Revit 2026 (ENU)','Revit')) On instance:     #23391=IfcApplication(#23392,'2026','Autodesk Revit 2026 (ENU)','Revit')                                                                     ^^^^^^^  Rule IfcApplication.UR1:     The attribute ApplicationIdentifier should be unique Violated by:     #2=IfcApplication(#1,'2026','Autodesk Revit 2026 (ENU)','Revit')                                                             ^^^^^^^
+- [ERROR] (type=schema, attribute=IfcRelAssociatesMaterial.RelatedObjects, instance=#22526=IfcRelAssociatesMaterial('1foO0sSA5Eruqzg6wQrcPu',#18,$,$,$,#22527)) Attribute not optional
