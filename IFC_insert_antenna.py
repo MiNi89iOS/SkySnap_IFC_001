@@ -49,7 +49,7 @@ def parse_args() -> argparse.Namespace:
         "--azimuth-deg",
         type=float,
         default=123.0,
-        help="Azymut CCW od osi X w stopniach (domyslnie 123.0).",
+        help="Azymut od polnocy, zgodnie z ruchem wskazowek zegara, w stopniach (domyslnie 123.0).",
     )
     parser.add_argument(
         "--leg-index",
@@ -427,8 +427,11 @@ def main() -> int:
     if target_owner_history:
         target_antenna.OwnerHistory = target_owner_history
 
+    # Azimuth convention:
+    # 0 deg = +Y (north), positive clockwise.
+    # Convert to XY vector in model coordinates (+X east, +Y north).
     azimuth_rad = math.radians(args.azimuth_deg)
-    azimuth_x_world = np.array([math.cos(azimuth_rad), math.sin(azimuth_rad), 0.0], dtype=float)
+    azimuth_x_world = np.array([math.sin(azimuth_rad), math.cos(azimuth_rad), 0.0], dtype=float)
     azimuth_z_world = np.array([0.0, 0.0, 1.0], dtype=float)
 
     axis_placement = create_axis_placement(
@@ -463,7 +466,7 @@ def main() -> int:
         f"({leg_placement.insertion_point[0]:.3f}, {leg_placement.insertion_point[1]:.3f}, {leg_placement.insertion_point[2]:.3f})"
     )
     print(f"Wysokosc docelowa: {args.height_m:.3f} m")
-    print(f"Azymut: {args.azimuth_deg:.3f} deg (CCW od +X)")
+    print(f"Azymut: {args.azimuth_deg:.3f} deg (od polnocy, zgodnie z ruchem wskazowek zegara)")
     return 0
 
 
