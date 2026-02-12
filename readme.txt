@@ -18,7 +18,7 @@ Zastosowane biblioteki (requirements.txt):
 
 
 Kroki konfiguracji:
-1. Przejdz do katalogu projektu
+1. W Visual Studio Code przejdz do katalogu projektu
 2. Utworz srodowisko virtualne:
    python3 -m venv .venv
 3. Aktywuj srodowisko:
@@ -42,7 +42,6 @@ Pliki wynikowe:
 
 2) Komentarz do wyniku weryfikacji poprawnosci plikow IFC
 
-Komentarz na podstawie aktualnych raportow:
 - ANTENA_VERIFICATION.txt:
   plik ANTENA.ifc przechodzi walidacje bez bledow (0 error, 0 warning).
 - SEGMENT_VERIFICATION.txt:
@@ -55,9 +54,6 @@ Interpretacja:
 
 3) Komentarze znaczenia Psetow obecnych w plikach IFC
 
-Ponizej skrot znaczenia Psetow wykrytych w aktualnych IFC:
-
-Doprecyzowanie (standardowe vs niestandardowe):
 - W ANTENA.ifc jedynym niestandardowym Psetem jest Pset_SkySnap.
 - W SEGMENT.ifc poza Pset_SkySnap wystepuja tez inne niestandardowe (narzedziowe/projektowe) zestawy:
   Constraints, Constraints(Type), Construction, Dimensions, Geometric Position, Graphics(Type), Identity Data,
@@ -125,3 +121,6 @@ Doprecyzowanie (standardowe vs niestandardowe):
     Geometria przekroju dla analiz konstrukcyjnych.
 29. Text
     Pola opisowe i etykiety tekstowe.
+
+
+4) Wstawiono Antenę na Segment.
