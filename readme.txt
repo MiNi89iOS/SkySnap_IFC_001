@@ -52,12 +52,20 @@ Komentarz na podstawie aktualnych raportow:
 Interpretacja:
 - ANTENA.ifc jest spojny na poziomie sprawdzanych regul.
 - SEGMENT.ifc zawiera niekompletna relacje materialowa (powiazanie materialu z elementami jest niepelne), wiec plik nie jest w pelni poprawny.
-- Jezeli uruchomisz walidacje z --express-rules, moga pojawic sie dodatkowe bledy logiczne regual IFC.
-
 
 3) Komentarze znaczenia Psetow obecnych w plikach IFC
 
 Ponizej skrot znaczenia Psetow wykrytych w aktualnych IFC:
+
+Doprecyzowanie (standardowe vs niestandardowe):
+- W ANTENA.ifc jedynym niestandardowym Psetem jest Pset_SkySnap.
+- W SEGMENT.ifc poza Pset_SkySnap wystepuja tez inne niestandardowe (narzedziowe/projektowe) zestawy:
+  Constraints, Constraints(Type), Construction, Dimensions, Geometric Position, Graphics(Type), Identity Data,
+  Identity Data(Type), Materials and Finishes, Other, Other(Type), Phasing, ProfileProperties, Structural,
+  Structural Analysis, Structural Section Geometry, Text.
+- Standardowe IFC sa przede wszystkim Psety z katalogu buildingSMART (np. Pset_BuildingCommon, Pset_ColumnCommon,
+  Pset_MemberCommon, Pset_PlateCommon, Pset_SiteCommon itd.).
+
 
 1. Constraints
    Ograniczenia i zaleznosci polozenia elementu wzgledem poziomow/hosta.
