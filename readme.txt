@@ -1,12 +1,24 @@
-1) Instrukcja konfiguracji srodowiska, w ktorym teraz pracujemy
+1) Instrukcja konfiguracji srodowiska:
 
 Wymagania:
 - Python 3.14 (lub zgodny 3.x z obsluga ifcopenshell 0.8.4.post1)
 - system powlokowy (np. zsh/bash)
 
+Zastosowane biblioteki (requirements.txt):
+- ifcopenshell==0.8.4.post1
+  Glowna biblioteka do odczytu IFC, walidacji schematu i analizy Property Setow.
+- pytest==9.0.2
+  Wymagane przez walidacje IFC z opcja --express-rules (wewnetrzne reguly EXPRESS).
+- numpy==2.4.2, shapely==2.1.2
+  Zaleznosci obliczeniowo-geometryczne wykorzystywane przez ekosystem ifcopenshell.
+- isodate==0.7.2, python-dateutil==2.9.0.post0, six==1.17.0, typing_extensions==4.15.0
+  Biblioteki pomocnicze do obslugi dat, kompatybilnosci i typowania.
+- iniconfig==2.3.0, packaging==26.0, pluggy==1.6.0, Pygments==2.19.2, lark==1.3.1
+  Dodatkowe zaleznosci srodowiska i parserow (m.in. dla pytest/ifcopenshell).
+
+
 Kroki konfiguracji:
-1. Przejdz do katalogu projektu:
-   cd "/Users/mini/Tworzenie Aplikacji/PYTHON/SkySnap_IFC_001"
+1. Przejdz do katalogu projektu
 2. Utworz srodowisko virtualne:
    python3 -m venv .venv
 3. Aktywuj srodowisko:
@@ -28,19 +40,6 @@ Pliki wynikowe:
 - *_VERIFICATION.txt (wynik poprawnosci)
 - *_PROPERTYSETS.txt (opis Property Setow)
 
-Zastosowane biblioteki (requirements.txt):
-- ifcopenshell==0.8.4.post1
-  Glowna biblioteka do odczytu IFC, walidacji schematu i analizy Property Setow.
-- pytest==9.0.2
-  Wymagane przez walidacje IFC z opcja --express-rules (wewnetrzne reguly EXPRESS).
-- numpy==2.4.2, shapely==2.1.2
-  Zaleznosci obliczeniowo-geometryczne wykorzystywane przez ekosystem ifcopenshell.
-- isodate==0.7.2, python-dateutil==2.9.0.post0, six==1.17.0, typing_extensions==4.15.0
-  Biblioteki pomocnicze do obslugi dat, kompatybilnosci i typowania.
-- iniconfig==2.3.0, packaging==26.0, pluggy==1.6.0, Pygments==2.19.2, lark==1.3.1
-  Dodatkowe zaleznosci srodowiska i parserow (m.in. dla pytest/ifcopenshell).
-
-
 2) Komentarz do wyniku weryfikacji poprawnosci plikow IFC
 
 Komentarz na podstawie aktualnych raportow:
@@ -51,7 +50,7 @@ Komentarz na podstawie aktualnych raportow:
   IfcRelAssociatesMaterial.RelatedObjects jest atrybutem wymaganym, a w instancji #22526 nie ma poprawnej wartosci.
 
 Interpretacja:
-- ANTENA.ifc jest spojny na poziomie sprawdzanych regual.
+- ANTENA.ifc jest spojny na poziomie sprawdzanych regul.
 - SEGMENT.ifc zawiera niekompletna relacje materialowa (powiazanie materialu z elementami jest niepelne), wiec plik nie jest w pelni poprawny.
 - Jezeli uruchomisz walidacje z --express-rules, moga pojawic sie dodatkowe bledy logiczne regual IFC.
 
